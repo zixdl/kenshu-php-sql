@@ -1,0 +1,66 @@
+version: "3"
+
+# ネットワーク
+networks:
+    pr-network:
+        driver: bridge
+
+#ボリューム
+volumes:
+    dir-site:
+        driver_opts:
+            device: /Users/songtranvan/Desktop/IT研修/kenshu-php-sql/sites/
+            o: bind
+            type: bind
+
+services:
+    # PHP コンテナ
+    php:
+        container_name: php
+        build:
+            dockerfile: Dockerfile
+            context: ./php/
+        hostname: php
+        restart: always
+        networks: 
+            - pr-network
+        volumes: 
+            - dir-site:/home/sites/
+    # HTTPD コンテナ
+    httpd:
+        container_name: httpd
+        image: "httpd:latest"
+        hostname: httpd
+        restart: always
+        networks: 
+            - pr-network
+        volumes: 
+            - dir-site:/home/sites/
+            - ./httpd.conf:/usr/local/apache2/conf/httpd.conf
+        ports: 
+            - "6969:80"
+            - "443:443"
+    # MySQL コンテナ
+    mysql:
+        container_name: mysql
+        image: "mysql:latest"
+        hostname: mysql
+        restart: always
+        networks: 
+            - pr-network
+        volumes: 
+            - ./database:/var/lib/mysql
+            - ./my.cnf:/etc/mysql/my.cnf
+        env_file:
+            - ./mysql.env
+    # PHPMyAdmin コンテナ
+    phpmyadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        env_file:
+            - ./pma.env
+        ports: 
+            - "8080:80"
+        networks:
+            - pr-network
