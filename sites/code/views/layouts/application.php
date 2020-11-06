@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>記事投稿サービス</title>
+    <title>ホーム</title>
 </head>
 <body>
-    <h1>こんにちは！</h1>
-    <h2>記事投稿サービスです。</h2>
+    <?= @$content ?>
 </body>
 </html>
