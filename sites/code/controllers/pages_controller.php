@@ -1,5 +1,6 @@
 <?php
     require_once("controllers/base_controller.php");
+    require_once("models/Article.php");
 
     class PagesController extends BaseController {
         public function __construct() {
@@ -8,7 +9,10 @@
 
         public function home() {
             session_start();
-            $this->render("home");
+            $articles = Article::getNewArticles();
+            $articles = ["articles" => $articles];
+
+            $this->render("home", $articles);
         }
 
         public function error() {

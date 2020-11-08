@@ -9,6 +9,11 @@
 
         public function login() {
             session_start();
+            if (!empty($_COOKIE["email"])) {
+                $_POST["email"] = $_COOKIE["email"];
+                $_POST["password"] = $_COOKIE["password"];
+                $_POST["save"] = "on";
+            }
             if (!empty($_POST)) {
                 if (!empty($_POST["email"]) && !empty($_POST["password"])) {
                     $login_user = User::loginUser(

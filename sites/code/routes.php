@@ -2,7 +2,8 @@
     $controllers = [
         "pages" => ["home", "error"],
         "users" => ["index"],
-        "author" => ["login", "register", "check", "thank"]
+        "author" => ["login", "register", "check", "thank"],
+        "articles" => ["index"]
     ];
 
     if (!array_key_exists($controller, $controllers) || !in_array($action, $controllers[$controller])) {

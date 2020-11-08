@@ -5,6 +5,7 @@
     $uri = $_SERVER['REQUEST_URI'];
     $arr = explode("/", $uri);
 
+    // uriの構造：?/{controller}/{action}
     // example uri: ?/pages/home
     // check array's third element
     if (!empty($arr[2])) {
