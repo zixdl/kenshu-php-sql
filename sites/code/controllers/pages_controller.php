@@ -7,6 +7,7 @@
         }
 
         public function home() {
+            session_start();
             $this->render("home");
         }
 

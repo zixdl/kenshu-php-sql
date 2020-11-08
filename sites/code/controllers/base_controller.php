@@ -12,7 +12,7 @@
                 require_once("views/layouts/application.php");
             }
             else {
-                header("Location: index.php?controller=pages&action=error");
+                header("Location: ?/pages/error");
             }
         }
     }

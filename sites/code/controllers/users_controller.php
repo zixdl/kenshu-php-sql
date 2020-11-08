@@ -10,6 +10,7 @@
         public function index() {
             $users = User::all();
             $data = ["users" => $users];
+            
             $this->render("index", $data);
         }
     }
