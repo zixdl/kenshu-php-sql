@@ -3,17 +3,26 @@
 
     //Get current URI
     $uri = $_SERVER['REQUEST_URI'];
-    $arr = explode("/", $uri);
+    $uri_array = explode("/", $uri);
 
-    // uriの構造：?/{controller}/{action}
-    // example uri: ?/pages/home
-    // check array's third element
-    if (!empty($arr[2])) {
-        $controller = ($arr[2]=="index.php")?"pages":rtrim($arr[2], ".php");
-        // echo "controller: ".$controller ."<br>";
-        if (!empty($arr[3])) {
-            $action = $arr[3];
-            // echo "action: ".$action;
+    /* 
+        uriの構造: ?/{controller}/{action}
+        uriの例: ?/pages/home 
+    */
+
+    //  check array's third element to get controller
+    if (!empty($uri_array[2])) {
+        $controller = rtrim($uri_array[2], ".php");
+
+        //  check array's fouth element to get action
+        if (!empty($uri_array[3])) {
+            // check if element's value is number, if true then action is show, otherwise action is array's third element's value
+            if (intval($uri_array[3])) {
+                $action = "show";
+            }
+            else {
+                $action = $uri_array[3];
+            }
         }
         else {
             $action = "index";

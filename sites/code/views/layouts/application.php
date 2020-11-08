@@ -6,6 +6,17 @@
     <title>ホーム</title>
 </head>
 <body>
+    <div style="text-align: right">
+        <a href="?/pages/home">ホーム</a>
+        |
+        <?php if (isset($_SESSION["current_user"])): ?>
+            <a style="color: #294c7a;"><b><?php echo $_SESSION["current_user"]; ?></b></a>
+            |
+            <a href="?/author/logout">ログアウト</a>
+        <?php else: ?>
+            <a href="?/author/login">ログイン</a>
+        <?php endif; ?>
+    </div>
     <?= @$content ?>
 </body>
 </html>

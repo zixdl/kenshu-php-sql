@@ -53,6 +53,27 @@
             $this->render("login");
         }
 
+        public function logout() {
+            session_start();
+
+            //  セッション情報を削除
+            $_SESSION = [];
+            if (ini_get("session.use_cookies")){
+                $params = session_get_cookie_params();
+                setcookie(session_name(), "", time() - 3600,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]);
+            }
+
+            session_destroy();
+
+            //  Cookie情報も削除
+            setcookie("email", "", time() - 3600);
+            setcookie("password", "", time() - 3600);
+
+            $this->render("login");
+        }
+
         public function register() {
             session_start();
             if (!empty($_POST)) {

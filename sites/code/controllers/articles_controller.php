@@ -13,4 +13,17 @@
 
             $this->render("index", $data);
         }
+
+        public function show() {
+            $current_uri = $_SERVER['REQUEST_URI'];
+            $current_uri_array = explode("/", $current_uri);
+            $article = Article::getArticle(end($current_uri_array));
+
+            if ($article["article"]) {
+                $this->render("show", $article);
+            }
+
+            $error = ["error" => "投稿見つかれません！"];
+            $this->render("show", $error);
+        }
     }
