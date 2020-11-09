@@ -31,17 +31,17 @@
 
             //  投稿のイメージ取得
             $db = DB::getInstance();
-            $statement = $db->prepare('SELECT images.image as images FROM articles INNER JOIN images ON articles.id = images.article_id WHERE articles.id=?');
+            $statement = $db->prepare('SELECT images.* FROM articles INNER JOIN images ON articles.id = images.article_id WHERE articles.id=?');
             $statement->execute([$id]);
             $images = $statement->fetchAll();
 
-            $article_tags = ["article" => $article, "tags" => $tags, "images" => $images];
+            $article_tags_images = ["article" => $article, "tags" => $tags, "images" => $images];
 
-            return $article_tags;
+            return $article_tags_images;
         }
 
         //  投稿作成
-        static function create($title, $content, $author_id, $images, $tags = []) {
+        static function create($title, $content, $author_id, $images, $tags = [], $thumbnail) {
             $db = DB::getInstance();
             $statement = $db->prepare('INSERT INTO articles SET title=?, content=?, author_id=?');
             $statement->execute([
@@ -77,14 +77,24 @@
 
             //  imagesテーブルに挿入する
             if (!empty($images)) {
-                foreach ($images as $image) {
+                foreach ($images as $key => $image) {
                     $image_name = date("YmdHis") . $image;
-                    $db = DB::getInstance();
-                    $statement = $db->prepare('INSERT INTO images SET image=?, is_thumbnail=0, article_id=?');
-                    $statement->execute([
+                    if ($key == $thumbnail) {
+                        $db = DB::getInstance();
+                        $statement = $db->prepare('INSERT INTO images SET image=?, is_thumbnail=1, article_id=?');
+                        $statement->execute([
                         $image_name,
                         $last_id
-                    ]);
+                        ]);
+                    }
+                    else {
+                        $db = DB::getInstance();
+                        $statement = $db->prepare('INSERT INTO images SET image=?, is_thumbnail=0, article_id=?');
+                        $statement->execute([
+                        $image_name,
+                        $last_id
+                        ]);
+                    }
                 }
             }
         }

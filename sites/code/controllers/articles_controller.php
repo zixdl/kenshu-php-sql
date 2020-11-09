@@ -51,7 +51,8 @@
                         $_POST["content"],
                         $_SESSION["id"],
                         $_FILES["images"]["name"],
-                        $_POST["tags"]
+                        $_POST["tags"],
+                        $_POST["thumbnail"]
                     );
 
                     //  ファイルをアプロードする
@@ -68,7 +69,7 @@
                 }
             }
             
-            $return_data = ["errors" => $error, "tags" => Tag::all()];
+            $return_data = ["errors" => $error, "tags" => Tag::all(), "thumbnail" => $_POST["thumbnail"]];
 
             $this->render("create", $return_data);
         }

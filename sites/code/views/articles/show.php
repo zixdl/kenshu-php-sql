@@ -3,11 +3,23 @@
 <?php endif; ?>
 
 <p style="color: #294c7a; font-size: 16px; font-weight: bold"><?php echo $article["title"]; ?></p>
-<p><?php echo $article["content"]; ?></p>
+<p style="font-size: 14px;"><?php echo $article["content"]; ?></p>
 
 <?php if (isset($images)): ?>
     <?php foreach ($images as $image): ?>
-        <img src="./uploads/<?php echo $image["images"]; ?>" alt="<?php echo $image["images"]; ?>" width="300" height="250"><br>
+        <?php if ($image["is_thumbnail"]): ?>
+            <div class="main">
+                <h3>Thumbnail</h3>
+                <img src="./uploads/<?php echo $image["image"]; ?>" class="main-img" disabled>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <?php foreach ($images as $image): ?>
+        <ul class="thumb-list">
+            <li class="thumb-item">
+                <img src="./uploads/<?php echo $image["image"]; ?>" alt="<?php echo $image["images"]; ?>" alt="mountain" class="thumb-item-img is-active">
+            </li>
+        </ul>
     <?php endforeach; ?>
 <?php endif; ?>
 

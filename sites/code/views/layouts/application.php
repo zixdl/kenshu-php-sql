@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホーム</title>
+    <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
     <div style="text-align: right">
@@ -19,6 +20,10 @@
             <a href="?/author/login">ログイン</a>
         <?php endif; ?>
     </div>
-    <?= @$content ?>
+    <div class="wrapper">
+        <?= @$content ?>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="./assets/index.js"></script>
 </body>
 </html>
