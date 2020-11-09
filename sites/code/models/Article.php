@@ -23,13 +23,13 @@
             $statement->execute([$id]);
             $article = $statement->fetch();
 
-            // タグ取得
+            // 投稿のタグ取得
             $db = DB::getInstance();
             $statement = $db->prepare('SELECT tag_name FROM tags INNER JOIN article_tag ON tags.id = article_tag.tag_id WHERE article_tag.article_id=?');
             $statement->execute([$id]);
             $tags = $statement->fetchAll();
 
-            //  イメージ取得
+            //  投稿のイメージ取得
             $db = DB::getInstance();
             $statement = $db->prepare('SELECT images.image as images FROM articles INNER JOIN images ON articles.id = images.article_id WHERE articles.id=?');
             $statement->execute([$id]);
@@ -38,5 +38,54 @@
             $article_tags = ["article" => $article, "tags" => $tags, "images" => $images];
 
             return $article_tags;
+        }
+
+        //  投稿作成
+        static function create($title, $content, $author_id, $images, $tags = []) {
+            $db = DB::getInstance();
+            $statement = $db->prepare('INSERT INTO articles SET title=?, content=?, author_id=?');
+            $statement->execute([
+                $title,
+                $content,
+                $author_id
+            ]);
+            $last_id = $db->lastInsertId();
+            
+            //  article_tagテーブルに挿入する
+            if (!empty($tags)) {
+                $tags_str = "";
+                foreach ($tags as $key => $value) {
+                    $tags_str .= '"'.$value.'",';
+                }
+
+                $tags_str = rtrim($tags_str, ",");
+
+                $db = DB::getInstance();
+                $query = $db->query('SELECT id FROM tags WHERE tag_name IN ('.$tags_str.')');
+                $tags_id_arr = $query->fetchAll();
+
+                $db = DB::getInstance();
+                
+                foreach ($tags_id_arr as $tag) {
+                    $statement = $db->prepare('INSERT INTO article_tag SET article_id=?, tag_id=?');
+                    $statement->execute([
+                        $last_id,
+                        $tag["id"]
+                    ]);
+                }
+            }
+
+            //  imagesテーブルに挿入する
+            if (!empty($images)) {
+                foreach ($images as $image) {
+                    $image_name = date("YmdHis") . $image;
+                    $db = DB::getInstance();
+                    $statement = $db->prepare('INSERT INTO images SET image=?, is_thumbnail=0, article_id=?');
+                    $statement->execute([
+                        $image_name,
+                        $last_id
+                    ]);
+                }
+            }
         }
     }

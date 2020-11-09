@@ -12,6 +12,8 @@
         <?php if (isset($_SESSION["current_user"])): ?>
             <a style="color: #294c7a;"><b><?php echo $_SESSION["current_user"]; ?></b></a>
             |
+            <a href="?/articles/create">新投稿作成</a>
+            |
             <a href="?/author/logout">ログアウト</a>
         <?php else: ?>
             <a href="?/author/login">ログイン</a>

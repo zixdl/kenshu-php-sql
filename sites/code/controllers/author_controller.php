@@ -71,7 +71,7 @@
             setcookie("email", "", time() - 3600);
             setcookie("password", "", time() - 3600);
 
-            $this->render("login");
+            header("Location: ?/author/login");
         }
 
         public function register() {

@@ -7,7 +7,7 @@
 
 <?php if (isset($images)): ?>
     <?php foreach ($images as $image): ?>
-        <img src="uploads/<?php echo $image["images"]; ?>" alt="image<?php echo $article["id"]; ?> url" width="300" height="250"><br>
+        <img src="./uploads/<?php echo $image["images"]; ?>" alt="<?php echo $image["images"]; ?>" width="300" height="250"><br>
     <?php endforeach; ?>
 <?php endif; ?>
 

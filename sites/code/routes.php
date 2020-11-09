@@ -3,7 +3,7 @@
         "pages" => ["home", "error"],
         "users" => ["index"],
         "author" => ["login", "register", "check", "thank", "logout"],
-        "articles" => ["index", "show"]
+        "articles" => ["index", "create", "store", "show"]
     ];
 
     if (!array_key_exists($controller, $controllers) || !in_array($action, $controllers[$controller])) {
