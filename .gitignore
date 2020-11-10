@@ -1,2 +1,10 @@
 *.env
-/database
+
+sites/code/config/environment.php
+
+sites/code/upload/*
+
+!database/
+
+database/*
+!database/sql/
