@@ -2,6 +2,8 @@
 
 sites/code/config/environment.php
 
+sites/code/upload/*
+
 !database/
 
 database/*

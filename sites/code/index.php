@@ -16,13 +16,7 @@
 
         //  check array's fouth element to get action
         if (!empty($uri_array[3])) {
-            // check if element's value is number, if true then action is show, otherwise action is array's third element's value
-            if (intval($uri_array[3])) {
-                $action = "show";
-            }
-            else {
-                $action = $uri_array[3];
-            }
+            $action = $uri_array[3];
         }
         else {
             $action = "index";
