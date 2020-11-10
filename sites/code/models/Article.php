@@ -98,4 +98,96 @@
                 }
             }
         }
+
+        static function update($id, $title, $content, $images, $tags = [], $thumbnail_image) {
+            $db = DB::getInstance();
+            $statement = $db->prepare('UPDATE articles SET title=?, content=? WHERE id = ?');
+            $statement->execute([
+                $title,
+                $content,
+                $id
+            ]);
+            
+            //  article_tagテーブルを更新する
+            if (!empty($tags)) {
+                $tags_str = "";
+                foreach ($tags as $key => $value) {
+                    $tags_str .= '"'.$value.'",';
+                }
+
+                $tags_str = rtrim($tags_str, ",");
+
+                $query = $db->query('SELECT id FROM tags WHERE tag_name IN ('.$tags_str.')');
+                $tags_id_arr = $query->fetchAll();
+                
+                //  古いタグを削除する
+                $delete_tag_statement = $db->prepare('DELETE FROM article_tag WHERE article_id=?');
+                $delete_tag_statement->execute([$id]);
+                
+                //  article_tagテーブルを更新する
+                foreach ($tags_id_arr as $tag) {
+                    $statement = $db->prepare('INSERT INTO article_tag SET article_id=?, tag_id=?');
+                    $statement->execute([
+                        $id,
+                        $tag["id"]
+                    ]);
+                }
+            }
+
+            /* サムネイルを更新する */
+            //  古いサムネイルを削除する
+            $update_statement = $db->prepare('UPDATE images SET is_thumbnail=0 WHERE article_id=?');
+            $update_statement->execute([
+                $id,
+            ]);
+
+            //  新しいサムネイルイメージを指定する
+            $update_statement = $db->prepare('UPDATE images SET is_thumbnail=1 WHERE article_id=? AND image=?');
+            $update_statement->execute([
+                $id,
+                $thumbnail_image
+            ]);
+
+            //新しいイメージをimagesテーブルに挿入する
+            if (!empty($images)) {
+                foreach ($images as $key => $image) {
+                    $image_name = date("YmdHis") . $image;
+                    $statement = $db->prepare('INSERT INTO images SET image=?, is_thumbnail=0, article_id=?');
+                    $statement->execute([
+                    $image_name,
+                    $id
+                    ]);
+                }
+            }
+        }
+
+        static function getUserArticles($user_id) {
+            $db = DB::getInstance();
+            $statement = $db->prepare('SELECT articles.id, articles.title FROM articles WHERE author_id=?');
+            $statement->execute([$user_id]);
+            $articles = $statement->fetchAll();
+
+            return $articles;
+        }
+
+        static function getArticleAuthorId($article_id) {
+            $db = DB::getInstance();
+            $statement = $db->prepare('SELECT author_id FROM articles where id=?');
+            $statement->execute([$article_id]);
+            $article_author_id = $statement->fetch();
+
+            return $article_author_id["author_id"];
+        }
+
+        static function remove($article_id) {
+            $db = DB::getInstance();
+            $statement = $db->prepare('DELETE FROM article_tag WHERE article_id=?');
+            $statement->execute([$article_id]);
+
+            $statement = $db->prepare('DELETE FROM images WHERE article_id=?');
+            $statement->execute([$article_id]);
+
+            $statement = $db->prepare('DELETE FROM articles WHERE id=?');
+            $statement->execute([$article_id]);
+        }
     }

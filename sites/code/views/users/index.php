@@ -1,9 +1,7 @@
-<?php
-    echo '<ul>';
-    foreach ($users as $user) {
-        echo '<li>
-        <a href="#">' . $user->user_name . '</a>
-        </li>';
-}
-    echo '</ul>';
-?>
+<ul>    
+    <?php foreach ($users as $user): ?>
+        <li>
+            <a href="#"><?php echo htmlspecialchars($user->user_name, ENT_QUOTES); ?></a>
+        </li>
+    <?php endforeach; ?>
+</ul>
