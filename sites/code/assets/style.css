@@ -25,6 +25,7 @@
   .thumb-item-img {
     width: 100%;
     filter: grayscale(100%);
+    
   }
   .thumb-item-img.is-active,
   .thumb-item-img:hover {
@@ -32,5 +33,5 @@
   }
   
   img:hover, img.selected {
-    border: 1px solid green;  
+    border: 2px solid #294c7a;  
   }
