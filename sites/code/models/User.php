@@ -46,7 +46,6 @@
 
             $result = $statement->fetch(PDO::FETCH_ASSOC);
             $logged_in_user = new User($result["id"], $result["user_name"], $result["email"], $result["address"]);
-            // echo $logged_in_user->user_name;
             return $logged_in_user;
         }
     }

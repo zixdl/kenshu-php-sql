@@ -62,7 +62,7 @@
         public function logout() {
             session_start();
 
-            //  セッション情報を削除
+            /*  セッション情報を削除    */
             $_SESSION = [];
             if (ini_get("session.use_cookies")){
                 $params = session_get_cookie_params();
@@ -73,7 +73,7 @@
 
             session_destroy();
 
-            //  Cookie情報も削除
+            /*  Cookie情報も削除    */
             setcookie("email", "", time() - 3600);
             setcookie("password", "", time() - 3600);
 
@@ -83,6 +83,7 @@
         public function register() {
             session_start();
             if (!empty($_POST)) {
+                /*  入力したフォームをチェックする  */
                 if ($_POST["name"] == "") {   
                     $error["name"] = "＊ ニックネーム必須";
                 }
