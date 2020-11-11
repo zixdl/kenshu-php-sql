@@ -6,4 +6,3 @@
 <?php endforeach; ?>
 
 <a href="?/articles">＞＞投稿一覧</a>
-
