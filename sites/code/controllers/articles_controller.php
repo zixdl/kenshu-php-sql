@@ -171,11 +171,16 @@
             
             if (!empty($_SESSION["id"])) {
                 $articles = Article::getUserArticles($_SESSION["id"]);
-            
-                $this->render("my_articles", ["articles" => $articles]);
+                if (!empty($articles)) {
+                    $this->render("my_articles", ["articles" => $articles]);
+                }
+
+                $this->render("my_articles", ["error" => "投稿ありません！"]);
+                exit;
             }
             
             header("Location: ?/author/login");
+            exit();
         }
 
         public function delete() {

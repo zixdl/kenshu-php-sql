@@ -1,11 +1,13 @@
 <?php
     class User {
+        public $id;
         public $user_name;
         public $email;
         public $address;
 
-        public function __construct($user_name, $email, $address)
+        public function __construct($id, $user_name, $email, $address)
         {
+            $this->id = $id;
             $this->user_name = $user_name;
             $this->email = $email;
             $this->address = $address;
@@ -17,7 +19,7 @@
             $query = $db->query('SELECT * FROM users');
 
             foreach($query->fetchAll() as $item) {
-                $list[] = new User($item["user_name"], $item["emai"], $item["content"]);
+                $list[] = new User($item["id"], $item["user_name"], $item["emai"], $item["address"]);
             }
 
             return $list;
@@ -41,7 +43,10 @@
                 $email,
                 sha1($password)
             ]);
-            $logged_in_user = $statement->fetch();
+
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            $logged_in_user = new User($result["id"], $result["user_name"], $result["email"], $result["address"]);
+            // echo $logged_in_user->user_name;
             return $logged_in_user;
         }
     }

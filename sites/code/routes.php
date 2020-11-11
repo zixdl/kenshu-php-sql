@@ -1,7 +1,7 @@
 <?php
     $controllers = [
         "pages" => ["home", "error"],
-        "users" => ["index"],
+        "users" => ["index","login", "register", "check", "thank", "logout"],
         "author" => ["login", "register", "check", "thank", "logout"],
         "articles" => ["index", "create", "store", "show", "edit", "update", "my_articles", "delete"]
     ];
@@ -11,6 +11,7 @@
         $action = "error";
     }
 
+    /*  コントローラファイルの構造：「コントローラ名_controller.php」   */
     include_once("controllers/". $controller . "_controller.php");
     $class = str_replace("_", "", ucwords($controller, "-")). "Controller";
     $controller = new $class;

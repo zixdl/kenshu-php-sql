@@ -1,9 +1,4 @@
 <h2>ログイン</h2>
-<?php if (isset($error)): ?>
-    <p style="color: red">
-        <?php echo htmlspecialchars($error, ENT_QUOTES); ?>
-    </p>
-<?php endif; ?>
 <div style="text-align: center; width: 250px; height: 250px; border: 1px solid #cecece;">
     <form action="" method="post">
         <label for="email">Email</label>
@@ -15,6 +10,6 @@
         <input type="checkbox" name="save" value="on" id="save">
         <span>ログイン情報の記録</span><br>
         <label for="save">次回から自動的にログインする</label><br><br>
-        <input type="submit" value="ログインする">｜<a href="?/author/register">登録する</a>
+        <input type="submit" value="ログインする">｜<a href="?/users/register">登録する</a>
     </form>
 </div>
