@@ -1,13 +1,4 @@
 <h2>新しい投稿作成</h2>
-<?php if (isset($errors)):
-    foreach($errors as $error):
-?>
-    <p style="color: red;">
-        <?php echo htmlspecialchars($error, ENT_QUOTES); ?>
-    </p>
-<?php endforeach; 
-    endif;
-?>
 <form action="?/articles/store" method="post" enctype="multipart/form-data">
     <label for="title">タイトル</label><br>
     <input type="text" name="title" size="150"><br>
@@ -20,7 +11,7 @@
     <label for="tags">タグ</label><br>
     <select name="tags[]" multiple>
         <?php foreach ($tags as $tag): ?>
-            <option value="<?php echo $tag["tag_name"]; ?>"><?php echo $tag["tag_name"] ?></option>
+            <option value="<?php echo $tag->tag_name; ?>"><?php echo $tag->tag_name ?></option>
         <?php endforeach; ?>
     </select><br>
     <input type="submit" class="btn-submit" value="作成する">

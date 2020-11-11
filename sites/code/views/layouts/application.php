@@ -23,6 +23,7 @@
         <?php endif; ?>
     </div>
     <div class="wrapper">
+        <?php require_once("views/layouts/messages.php") ?>
         <?php require_once("views/layouts/errors.php") ?>
         <?= @$content ?>
     </div>
