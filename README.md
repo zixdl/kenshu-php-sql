@@ -18,11 +18,13 @@
 - 各URIの例:
     - Articleテーブルは以下のURIがあリます：
         - Index: /articles ----- GET
+        - Create: /articles/create --- GET
+        - Store: /articles/create --- POST
         - Show: /articles/1 ----- GET
         - Edit: /articles/1/edit ----- GET
         - Update: /articles/1 ----- PUT
         - Delete: /articles/1 ----- DELETE
-        - Logged In User's Articles: /articles/my_articles
+        - Logged In User's Articles: /articles/my_articles --- GET
     
     - Userテーブルは下記のURIがあります:
         - Register: /users/register
