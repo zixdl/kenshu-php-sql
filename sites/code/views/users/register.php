@@ -8,7 +8,7 @@
 <?php endforeach; 
     endif;
 ?>
-<form action="?/users/register" method="post">
+<form action="/users/register" method="post">
     <label for="name">ニックネーム:</label><br>
     <input type="text" name="name" size="50" value="<?php echo empty($_SESSION["new_user"]["name"])?"":htmlspecialchars($_SESSION["new_user"]["name"], ENT_QUOTES); ?>"><br>
     <label for="email">メールアドレス:</label><br>

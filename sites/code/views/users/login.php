@@ -10,6 +10,6 @@
         <input type="checkbox" name="save" value="on" id="save">
         <span>ログイン情報の記録</span><br>
         <label for="save">次回から自動的にログインする</label><br><br>
-        <input type="submit" value="ログインする">｜<a href="?/users/register">登録する</a>
+        <input type="submit" value="ログインする">｜<a href="/users/register">登録する</a>
     </form>
 </div>
