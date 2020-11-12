@@ -42,7 +42,7 @@
                             setcookie("password", $_POST["password"], time()+3600);
                         }
 
-                        header("Location: /index.php");
+                        header("Location: /");
                         exit();
                     }
                     /*  ログイン失敗    */
@@ -78,7 +78,7 @@
             setcookie("email", "", time() - 3600);
             setcookie("password", "", time() - 3600);
 
-            header("Location: ?/users/login");
+            header("Location: /users/login");
         }
 
         public function register() {

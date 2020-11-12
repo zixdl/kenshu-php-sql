@@ -6,7 +6,7 @@
     <?php foreach ($images as $image): ?>
         <?php if ($image->is_thumbnail): ?>
             <div class="main">
-                <img src="./uploads/<?php echo $image->image ?>" class="main-img" alt="main-img">
+                <img src="/uploads/<?php echo $image->image ?>" class="main-img" alt="main-img">
             </div>
         <?php endif; ?>
     <?php endforeach; ?>
@@ -15,7 +15,7 @@
     <ul class="thumb-list">
     <?php foreach ($images as $image): ?>
             <li class="thumb-item">
-                <img src="./uploads/<?php echo $image->image; ?>" alt="<?php echo $image->image; ?>" alt="mountain" class="thumb-item-img is-active">
+                <img src="/uploads/<?php echo $image->image; ?>" alt="<?php echo $image->image; ?>" alt="mountain" class="thumb-item-img is-active">
             </li>
     <?php endforeach; ?>
     </ul>
@@ -30,7 +30,7 @@
     </p>
 <?php endif; ?>
 
-<a href="?/articles">＜＜戻る</a> 
+<a href="/articles">＜＜戻る</a> 
 <?php if ($article->author_id == $_SESSION["id"]): ?>
-    | <a href="?/articles/edit/<?php echo htmlspecialchars($article->id, ENT_QUOTES); ?>">編集＞＞</a>
+    | <a href="/articles/<?php echo htmlspecialchars($article->id, ENT_QUOTES); ?>/edit">編集＞＞</a>
 <?php endif; ?>

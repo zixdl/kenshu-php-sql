@@ -18,7 +18,7 @@
         /*  新しい投稿を作成する    */
         public function create() {
             if (empty($_SESSION["id"])) {
-                header("Location: ?/users/login");
+                header("Location: /users/login");
                 exit();
             }
 
@@ -53,7 +53,7 @@
                     }
 
                     $_SESSION["message"] = "投稿作成完了しました！";
-                    header("Location: ?/articles");
+                    header("Location: /articles");
                     exit();
                 }
             }            
@@ -84,9 +84,10 @@
             /*  アドレス欄から投稿のidを取得する    */
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
+            $article_id = $current_uri_array[count($current_uri_array) - 2];
 
-            if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
-                $article_info = Article::getArticle(end($current_uri_array));
+            if ($_SESSION["id"] == Article::getArticleAuthorId($article_id)) {
+                $article_info = Article::getArticle($article_id);
                 $article_info["all_tags"] = Tag::all();
                 if ($article_info["article"]->id) {
                     $this->render("edit", $article_info);
@@ -95,11 +96,12 @@
                 $error = ["error" => "投稿見つかれません！"];
 
                 $this->render("show", $error);
+                exit;
             }
             
             $_SESSION["errors"] =  ["error" => "更新権利ありません！"];
 
-            header("Location: index.php");
+            header("Location: /");
             exit();
         }
 
@@ -136,13 +138,13 @@
                     );
                     $_SESSION["message"] = "投稿編集完了しました！";
 
-                    header("Location: ?/articles/show/".end($current_uri_array));
+                    header("Location: /articles/".end($current_uri_array));
                     exit();
                 }
             }
             $_SESSION["errors"] = $form_error;
             unset($_FILES["images"]["name"][0]);
-            header("Location: ?/articles/edit/".end($current_uri_array));
+            header("Location: /articles/".end($current_uri_array)."/edit");
             exit();
         }
 
@@ -158,11 +160,11 @@
                 exit;
             }
             
-            header("Location: ?/users/login");
+            header("Location: /users/login");
             exit();
         }
 
-        public function delete() {
+        public function destroy() {
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
 
@@ -170,12 +172,12 @@
             if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
                 Article::remove(end($current_uri_array));
                 $_SESSION["message"] = "投稿が削除されました!";
-                header("Location: ?/articles/my_articles");
+                header("Location: /articles/my_articles");
                 exit();
             }
 
             $_SESSION["message"] = "削除権利ありません！";
-            header("Location: ?/articles/my_articles");
+            header("Location: /articles/my_articles");
             exit();
         }
     }

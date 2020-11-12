@@ -4,22 +4,23 @@
     //  アドレス欄からURIを取得する
     $uri = $_SERVER['REQUEST_URI'];
     $uri_array = explode("/", $uri);
-
-    /* 
-        完璧なURIの構造: 「/index.php?/{controller}/{action}/{id}」あるいは「/?/{controller}/{action}/」
-
-        URIの例: /index.php?/articles/show/1
-        このURIを「／］に基づいて分割すると次のような配列になります。
-        [0 => "", 1 => "index.php?", 2 => "articles", 3 => "show", 4 => "1"]
-    */
-
-    /*  コントローラを取得するために、配列の３番目の要素をチェックする  */
-    if (!empty($uri_array[2])) {
-        $controller = $uri_array[2];
-        
-        /*  アクションを取得するために、配列の４番目の要素をチェックする    */
-        if (!empty($uri_array[3])) {
-            $action = $uri_array[3];
+    if (!empty($uri_array[1])) {
+        $controller = $uri_array[1];        
+        if (!empty($uri_array[2])) {
+            if (intval($uri_array[2])) {
+                if ($_POST["method"] == "PUT") {
+                    $action = "update";
+                }
+                elseif ($_POST["method"] == "DELETE") {
+                    $action = "destroy";
+                }
+                else {
+                    $action = $uri_array[3]=="edit"?"edit":"show";
+                }
+            }
+            else {
+                $action = $uri_array[2];
+            }
         }
         else {
             $action = "index";
@@ -29,5 +30,6 @@
         $controller = "pages";
         $action = "home";
     }
+    
     
     require_once('routes.php');

@@ -9,25 +9,25 @@
 - phpmyadminのポート: 8080
 
 ## URLの構造
+- リソースコントローラにより処理されるアクッションを実装しました。
+![alt text](https://user-images.githubusercontent.com/63382767/98885166-e9da5a00-24d4-11eb-8034-6eddb880309f.png)
+- 更新しましたこと:　フォームにPUTかDELETEのあるmethodというインプットを追加して、フォームをサブミットした時、このインプットをチェックするこそ、メソットはPOSTかPUTかDELETEかが判断出来ます。
+これは私の解決方法です。PHPではPUTやDELETEというグローバル変数がないので、RESTfulなURIの実装が結構大変でした。他の解決方法が知っていたら、教えていただけると幸いです。
 
-- 完璧なURIの構造: 「/index.php?/{controller}/{action}/{id}」あるいは「/?/{controller}/{action}/」
-- URIの例: /index.php?/articles/show/1
-このURIを「／］に基づいて分割すると次のような配列になります。
-["", "index.php?", "articles", "show", "1"]
 
 - 各URIの例:
     - Articleテーブルは以下のURIがあリます：
-        - Index: /index.php?/articles
-        - Show: /index.php?/articles/show/1
-        - Edit: /index.php?/articles/edit/1
-        - Update: /index.php?/articles/update/1
-        - Delete: /index.php?/articles/delete/1
-        - Logged In User's Articles: /index.php?/articles/my_articles
+        - Index: /articles ----- GET
+        - Show: /articles/1 ----- GET
+        - Edit: /articles/1/edit ----- GET
+        - Update: /articles/1 ----- PUT
+        - Delete: /articles/1 ----- DELETE
+        - Logged In User's Articles: /articles/my_articles
     
     - Userテーブルは下記のURIがあります:
-        - Register: /index.php?/users/register
-        - Login: /index.php?/users/login
-        - Logout: /index.php?/users/logout
+        - Register: /users/register
+        - Login: /users/login
+        - Logout: /users/logout
 
 
 ## システムの構築
