@@ -184,7 +184,7 @@
         static function getUserArticles($user_id) {
             $articles_list = [];
             $db = DB::getInstance();
-            $statement = $db->prepare('SELECT articles.* FROM articles WHERE author_id=?');
+            $statement = $db->prepare('SELECT * FROM articles WHERE author_id=? ORDER BY id DESC');
             $statement->execute([$user_id]);
 
             foreach($statement->fetchAll() as $item) {

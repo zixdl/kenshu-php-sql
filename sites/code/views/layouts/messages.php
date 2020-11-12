@@ -1,4 +1,4 @@
 <?php if (isset($_SESSION["message"])): ?>
-    <h3 style="color: #294c7a;"><?php echo $_SESSION["message"]; ?></h2>
+    <p style="color: #294c7a;"><?php echo $_SESSION["message"]; ?></p>
     <?php unset($_SESSION["message"]); ?>
 <?php endif; ?>
