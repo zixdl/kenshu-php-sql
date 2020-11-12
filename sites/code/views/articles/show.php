@@ -1,8 +1,3 @@
-<?php if (isset($_SESSION["message"])): ?>
-    <h3><?php echo $_SESSION["message"]; ?></h3>
-    <?php unset($_SESSION["message"]); ?>
-<?php endif; ?>
-
 <p style="color: #294c7a; font-size: 16px; font-weight: bold"><?php echo $article->title; ?></p>
 <p style="font-size: 14px;"><?php echo $article->content; ?></p>
 
