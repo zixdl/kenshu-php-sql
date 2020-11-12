@@ -1,6 +1,7 @@
 <?php
     require_once("controllers/base_controller.php");
     require_once("models/User.php");
+    require_once("helpers/users_helper.php");
 
     class UsersController extends BaseController {
         public function __construct() {
@@ -13,13 +14,14 @@
         }
 
         public function login() {
-            session_start();
             /*  ユーザーがログイン情ほを記録しているかをチェックする    */
             if (!empty($_COOKIE["email"])) {
                 $_POST["email"] = $_COOKIE["email"];
                 $_POST["password"] = $_COOKIE["password"];
                 $_POST["save"] = "on";
             }
+
+            /*  入力したフォームをチェックする */
             if (!empty($_POST)) {
                 if (!empty($_POST["email"]) && !empty($_POST["password"])) {
                     $logged_in_user = User::loginUser(
@@ -43,6 +45,7 @@
                         header("Location: /index.php");
                         exit();
                     }
+                    /*  ログイン失敗    */
                     else {
                         $error = ["error" => "* ログインに失敗しました。正しくご記入ください！"];
                     }
@@ -60,8 +63,6 @@
         }
 
         public function logout() {
-            session_start();
-
             /*  セッション情報を削除    */
             $_SESSION = [];
             if (ini_get("session.use_cookies")){
@@ -81,26 +82,11 @@
         }
 
         public function register() {
-            session_start();
             if (!empty($_POST)) {
                 /*  入力したフォームをチェックする  */
-                if ($_POST["name"] == "") {   
-                    $error["name"] = "＊ ニックネーム必須";
-                }
-                if ($_POST["email"] == "") {
-                    $error["email"] = "＊ メールアドレス必須";
-                }
-                if ($_POST["address"] == "") {
-                    $error["address"] = "＊ 住所必須";
-                }
-                if ($_POST["password"] == "") {
-                    $error["password"] = "＊ パスワード必須";
-                }
-                if (strlen($_POST["password"]) < 4) {
-                    $error["password"] = "＊ パスワードを４文字以上入力してください";
-                }
+                $form_error = UserHelper::formValidate($_POST);
                 
-                if (empty($error)) {
+                if (empty($form_error)) {
                     $_SESSION["new_user"] = $_POST;
                     $data = ["data" => $_SESSION["new_user"]];
 
@@ -108,16 +94,14 @@
                 }
             }
 
-            if (isset($error)) {
-                $errors = ["errors" => $error];
-                $this->render("register", $errors);
+            if (isset($form_error)) {
+                $this->render("register", ["form_errors" => $form_error]);
             }
             
             $this->render("register");
         }
 
         public function thank() {
-            session_start();
             if (!empty($_POST) && !empty($_SESSION["new_user"])) {
                 User::create(
                     $_SESSION["new_user"]["name"],

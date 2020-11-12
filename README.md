@@ -12,15 +12,23 @@
 
 - 完璧なURIの構造: 「/index.php?/{controller}/{action}/{id}」あるいは「/?/{controller}/{action}/」
 - URIの例: /index.php?/articles/show/1
-例えば、Articleテーブルは以下のURIがあリます：
-    - Index: /index.php?/articles
-    - Show: /index.php?/articles/show/1
-    - Edit: /index.php?/articles/edit/1
-    - Update: /index.php?/articles/update/1
-    - Delete: /index.php?/articles/delete/1
-
 このURIを「／］に基づいて分割すると次のような配列になります。
-[0 => "", 1 => "index.php?", 2 => "articles", 3 => "show", 4 => "1"]
+["", "index.php?", "articles", "show", "1"]
+
+- 各URIの例:
+    - Articleテーブルは以下のURIがあリます：
+        - Index: /index.php?/articles
+        - Show: /index.php?/articles/show/1
+        - Edit: /index.php?/articles/edit/1
+        - Update: /index.php?/articles/update/1
+        - Delete: /index.php?/articles/delete/1
+        - Logged In User's Articles: /index.php?/articles/my_articles
+    
+    - Userテーブルは下記のURIがあります:
+        - Register: /index.php?/users/register
+        - Login: /index.php?/users/login
+        - Logout: /index.php?/users/logout
+
 
 ## システムの構築
 このシステムはMVC建築に基づいて構築されています。この写真みたいです。

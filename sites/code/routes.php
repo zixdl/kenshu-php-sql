@@ -12,6 +12,7 @@
     }
 
     /*  コントローラファイルの構造：「コントローラ名_controller.php」   */
+    session_start();
     include_once("controllers/". $controller . "_controller.php");
     $class = str_replace("_", "", ucwords($controller, "-")). "Controller";
     $controller = new $class;

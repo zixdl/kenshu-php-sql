@@ -3,6 +3,7 @@
     require_once("models/Article.php");
     require_once("models/Tag.php");
     require_once("models/Image.php");
+    require_once("helpers/articles_helper.php");
 
     class ArticlesController extends BaseController {
         public function __construct() {
@@ -11,17 +12,14 @@
 
         /*  全部の投稿を取得する    */
         public function index() {
-            session_start();
-
             $this->render("index", ["articles" => Article::all()]);
         }
 
         /*  新しい投稿を作成する    */
         public function create() {
-            session_start();
-
             if (empty($_SESSION["id"])) {
-                header("Location: ?/author/login");
+                header("Location: ?/users/login");
+                exit();
             }
 
             $tags = ["tags" => Tag::all()];
@@ -29,24 +27,9 @@
         }
 
         public function store() {
-            session_start();
             /*  フォームの入力をチェックする    */
             if (!empty($_POST)) {
-                if ($_POST["title"] == "") {   
-                    $form_error["title"] = "＊ タイトル必須";
-                }
-                if ($_POST["content"] == "") {
-                    $form_error["content"] = "＊ 本文必須";
-                }
-
-                if (!empty($_FILES["images"]["name"][0])) {
-                    foreach ($_FILES["images"]["name"] as $file) {
-                        $ext = substr($file, -3);
-                        if ($ext != "jpg" && $ext != "png") {
-                            $form_error["image"] = "＊ 写真などは「.gif」または「.jpg」の画像を指定してください";
-                        }
-                    }
-                }
+                $form_error = ArticleHelper::formValidate($_POST, $_FILES);
 
                 /*  入力したフォームにエラーがあるかどうかチェックする */
                 if (empty($form_error)) {
@@ -82,7 +65,6 @@
         }
 
         public function show() {
-            session_start();
             /*  アドレス欄から投稿のidを取得する    */
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
@@ -99,47 +81,40 @@
         }
 
         public function edit() {
-            session_start();
             /*  アドレス欄から投稿のidを取得する    */
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
-            $article_info = Article::getArticle(end($current_uri_array));
-            $article_info["all_tags"] = Tag::all();
-            if ($article_info["article"]->id) {
-                $this->render("edit", $article_info);
+
+            if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
+                $article_info = Article::getArticle(end($current_uri_array));
+                $article_info["all_tags"] = Tag::all();
+                if ($article_info["article"]->id) {
+                    $this->render("edit", $article_info);
+                    exit;
+                }
+                $error = ["error" => "投稿見つかれません！"];
+
+                $this->render("show", $error);
             }
+            
+            $_SESSION["errors"] =  ["error" => "更新権利ありません！"];
 
-            $error = ["error" => "投稿見つかれません！"];
-
-            $this->render("show", $error);
+            header("Location: index.php");
+            exit();
         }
 
         public function update() {
-            session_start();
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
 
             if (!empty($_POST)) {
                 /*  フォームの入力をチェックする    */
-                if ($_POST["title"] == "") {   
-                    $error["title"] = "＊ タイトル必須";
-                }
-                if ($_POST["content"] == "") {
-                    $error["content"] = "＊ 本文必須";
-                }
-                if (!empty($_FILES["images"]["name"][0])) {
-                    foreach ($_FILES["images"]["name"] as $file) {
-                        $ext = substr($file, -3);
-                        if ($ext != "jpg" && $ext != "png") {
-                            $error["image"] = "＊ 写真などは「.gif」または「.jpg」の画像を指定してください";
-                        }
-                    }
-                }
+                $form_error = ArticleHelper::formValidate($_POST, $_FILES);
                 /*  サムネイルイメージを指定する    */
                 $thumbnail_image = end(explode("/", $_POST["thumbnail_image"]));
 
                 /*  フォームのエラーをチェックする  */
-                if (empty($error)) {
+                if (empty($form_error)) {
                     /*  新しいイメージを選択したら、ファイルをアプロードする    */
                     if (!empty($_FILES["images"]["name"][0])){
                         $count = 0;
@@ -165,15 +140,13 @@
                     exit();
                 }
             }
-            $_SESSION["errors"] = $error;
+            $_SESSION["errors"] = $form_error;
             unset($_FILES["images"]["name"][0]);
             header("Location: ?/articles/edit/".end($current_uri_array));
             exit();
         }
 
-        public function my_articles() {
-            session_start();
-            
+        public function my_articles() {            
             /*  ユーザーが投稿した記事を取得する    */
             if (!empty($_SESSION["id"])) {
                 $articles = Article::getUserArticles($_SESSION["id"]);
@@ -185,16 +158,15 @@
                 exit;
             }
             
-            header("Location: ?/author/login");
+            header("Location: ?/users/login");
             exit();
         }
 
         public function delete() {
-            session_start();
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
 
-            /** 削除の権利があるかどうかをチェックする  */
+            /* 削除の権利があるかどうかをチェックする  */
             if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
                 Article::remove(end($current_uri_array));
                 $_SESSION["message"] = "投稿が削除されました!";
