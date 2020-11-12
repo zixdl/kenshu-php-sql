@@ -4,6 +4,7 @@
     </p>
 <?php endif; ?>
 
+<!-- 各フォームのエラーをチェックする -->
 <?php if (isset($form_errors)):
     foreach($form_errors as $error):
 ?>
