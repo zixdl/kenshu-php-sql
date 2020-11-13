@@ -1,4 +1,5 @@
 <form action="/articles/<?php echo $article->id; ?>" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="token" value="<?php echo htmlspecialchars(Csrf::createCsrfToken(), ENT_QUOTES); ?>">
     <label for="title">タイトル</label><br>
     <input type="text" name="title" size="150" value="<?php echo $article->title; ?>"><br>
     <label for="content">本文</label><br>

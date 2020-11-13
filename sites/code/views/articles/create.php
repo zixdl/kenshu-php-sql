@@ -1,5 +1,6 @@
 <h2>新しい投稿作成</h2>
 <form action="/articles/store" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="token" value="<?php echo htmlspecialchars(Csrf::createCsrfToken(), ENT_QUOTES); ?>">
     <label for="title">タイトル</label><br>
     <input type="text" name="title" size="150"><br>
     <label for="content">本文</label><br>
