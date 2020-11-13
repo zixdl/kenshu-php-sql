@@ -40,25 +40,23 @@
                 /*  入力したフォームにエラーがあるかどうかチェックする */
                 if (empty($form_error)) {
                     /*  投稿を作成する  */
-                    Article::create(
-                        $_POST["title"],
-                        $_POST["content"],
-                        $_SESSION["id"],
-                        $_FILES["images"]["name"],
-                        $_POST["tags"],
-                        $_POST["thumbnail"]
-                    );
+                    /*  トランザクションの実践が成功かどうかをチェックする    */
 
-                    /*  ファイルをアプロードする    */
-                    $count = 0;
-                    foreach ($_FILES["images"]["name"] as $file) {
-                        $image_name = date("YmdHis") . $file;
-                        $filePath = "./uploads/". $image_name;
-                        move_uploaded_file($_FILES["images"]["tmp_name"][$count], $filePath);
-                        $count += 1;
+                    if (Article::create($_POST["title"], $_POST["content"], $_SESSION["id"], $_FILES["images"]["name"], $_POST["tags"], $_POST["thumbnail"])) {
+                        /*  ファイルをアプロードする    */
+                        $count = 0;
+                        foreach ($_FILES["images"]["name"] as $file) {
+                            $image_name = date("YmdHis") . $file;
+                            $filePath = "./uploads/". $image_name;
+                            move_uploaded_file($_FILES["images"]["tmp_name"][$count], $filePath);
+                            $count += 1;
+                        }
+                        $_SESSION["message"] = "投稿作成完了しました！";                       
+                    }
+                    else {
+                        $_SESSION["message"] = "投稿作成失敗でした！";
                     }
 
-                    $_SESSION["message"] = "投稿作成完了しました！";
                     header("Location: /articles");
                     exit();
                 }
@@ -70,29 +68,25 @@
         }
 
         public function show() {
-            /*  アドレス欄から投稿のidを取得する    */
-            $current_uri = $_SERVER['REQUEST_URI'];
-            $current_uri_array = explode("/", $current_uri);
-            $article_info = Article::getArticle(end($current_uri_array));
+            $id = ArticleHelper::getIdFromURI();
+            $article_info = Article::getArticle($id);
             
-            /** このidに応じて投稿があるかどうかをチェックする */
+            /* このidに応じて投稿があるかどうかをチェックする */
             if ($article_info["article"]->id) {
                 $this->render("show", $article_info);
             }
 
-            /** 投稿がない場合、エラーを返す */
+            /* 投稿がない場合、エラーを返す */
             $error = ["error" => "投稿見つかれません！"];
             $this->render("show", $error);
         }
 
         public function edit() {
             /*  アドレス欄から投稿のidを取得する    */
-            $current_uri = $_SERVER['REQUEST_URI'];
-            $current_uri_array = explode("/", $current_uri);
-            $article_id = $current_uri_array[count($current_uri_array) - 2];
+            $id = ArticleHelper::getEditIdFromURI();
 
-            if ($_SESSION["id"] == Article::getArticleAuthorId($article_id)) {
-                $article_info = Article::getArticle($article_id);
+            if ($_SESSION["id"] == Article::getArticleAuthorId($id)) {
+                $article_info = Article::getArticle($id);
                 $all_tags = Tag::all();
                 if ($article_info["article"]->id) {
                     $this->render("edit", ["article" => $article_info["article"], "tags" => $article_info["tags"],
@@ -112,44 +106,38 @@
         }
 
         public function update() {
-            $current_uri = $_SERVER['REQUEST_URI'];
-            $current_uri_array = explode("/", $current_uri);
-
+            $id = ArticleHelper::getIdFromURI();            
             /*  CSRFトークンを確認する */
             if (!Csrf::validateCsrfToken()) {
                 /*  トークンがない場合、エラーを返す  */
                 die("正規の画面からご使用ください");
             }
 
+            /*  フォームの入力をチェックする    */
             if (!empty($_POST)) {
-                /*  フォームの入力をチェックする    */
                 $form_error = ArticleHelper::formValidate($_POST, $_FILES);
                 /*  サムネイルイメージを指定する    */
                 $thumbnail_image = end(explode("/", $_POST["thumbnail_image"]));
 
                 /*  フォームのエラーをチェックする  */
                 if (empty($form_error)) {
-                    /*  新しいイメージを選択したら、ファイルをアプロードする    */
-                    if (!empty($_FILES["images"]["name"][0])){
-                        $count = 0;
-                        foreach ($_FILES["images"]["name"] as $file) {
-                            $image_name = date("YmdHis") . $file;
-                            $filePath = "./uploads/". $image_name;
-                            move_uploaded_file($_FILES["images"]["tmp_name"][$count], $filePath);
-                            $count += 1;
+                    /*  トランザクションの実践が成功かどうかをチェックする    */
+                    if (Article::update($id, $_POST["title"], $_POST["content"], $_FILES["images"]["name"], $_POST["tags"], $thumbnail_image)) {
+                        /*  新しいイメージを選択したら、ファイルをアプロードする    */
+                        if (!empty($_FILES["images"]["name"][0])){
+                            $count = 0;
+                            foreach ($_FILES["images"]["name"] as $file) {
+                                $image_name = date("YmdHis") . $file;
+                                $filePath = "./uploads/". $image_name;
+                                move_uploaded_file($_FILES["images"]["tmp_name"][$count], $filePath);
+                                $count += 1;
+                            }
                         }
+                        $_SESSION["message"] = "投稿編集完了しました！";
                     }
-
-                    Article::update(
-                        end($current_uri_array),
-                        $_POST["title"],
-                        $_POST["content"],
-                        $_FILES["images"]["name"],
-                        $_POST["tags"],
-                        $thumbnail_image
-                    );
-                    $_SESSION["message"] = "投稿編集完了しました！";
-
+                    else {
+                        $_SESSION["message"] = "投稿編集失敗でした！";
+                    }
                     header("Location: /articles/".end($current_uri_array));
                     exit();
                 }
@@ -177,9 +165,8 @@
         }
 
         public function destroy() {
-            $current_uri = $_SERVER['REQUEST_URI'];
-            $current_uri_array = explode("/", $current_uri);
-
+            $id = ArticleHelper::getIdFromURI();
+            
             /*  CSRFトークンを確認する */
             if (!Csrf::validateCsrfToken()) {
                 /*  トークンがない場合、エラーを返す  */
@@ -187,11 +174,17 @@
             }
 
             /* 削除の権利があるかどうかをチェックする  */
-            if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
-                Article::remove(end($current_uri_array));
-                $_SESSION["message"] = "投稿が削除されました!";
+            if ($_SESSION["id"] == Article::getArticleAuthorId($id)) {
+                /*  トランザクションの実践が成功かどうかをチェックする    */
+                if (Article::remove($id)) {
+                    $_SESSION["message"] = "投稿が削除されました!";
+                    header("Location: /articles/my_articles");
+                    exit();
+                }
+
+                $_SESSION["message"] = "削除できませんでした！";
                 header("Location: /articles/my_articles");
-                exit();
+                exit();               
             }
 
             $_SESSION["message"] = "削除権利ありません！";
