@@ -2,6 +2,7 @@
     require_once("controllers/base_controller.php");
     require_once("models/User.php");
     require_once("helpers/users_helper.php");
+    require_once("config/csrf.php");
 
     class UsersController extends BaseController {
         public function __construct() {

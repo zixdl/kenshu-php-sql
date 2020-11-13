@@ -1,9 +1,10 @@
 <?php
-    require_once("controllers/base_controller.php");
-    require_once("models/Article.php");
-    require_once("models/Tag.php");
-    require_once("models/Image.php");
-    require_once("helpers/articles_helper.php");
+    require_once "controllers/base_controller.php";
+    require_once "models/Article.php";
+    require_once "models/Tag.php";
+    require_once "models/Image.php";
+    require_once "helpers/articles_helper.php";
+    require_once "config/csrf.php";
 
     class ArticlesController extends BaseController {
         public function __construct() {
@@ -22,11 +23,16 @@
                 exit();
             }
 
-            $tags = ["tags" => Tag::all()];
-            $this->render("create", $tags);
+            $this->render("create", ["tags" => Tag::all()]);
         }
 
         public function store() {
+            /*  CSRFトークンを確認する */
+            if (!Csrf::validateCsrfToken()) {
+                /*  トークンがない場合、エラーを返す  */
+                die("正規の画面からご使用ください");
+            }
+
             /*  フォームの入力をチェックする    */
             if (!empty($_POST)) {
                 $form_error = ArticleHelper::formValidate($_POST, $_FILES);
@@ -56,8 +62,7 @@
                     header("Location: /articles");
                     exit();
                 }
-            }            
-            /*  入力したフォームにエラーがある場合、再入力を求める  */
+            }
             unset($_FILES["images"]["name"][0]);
             $return_data = ["form_errors" => $form_error, "tags" => Tag::all()];
 
@@ -88,9 +93,10 @@
 
             if ($_SESSION["id"] == Article::getArticleAuthorId($article_id)) {
                 $article_info = Article::getArticle($article_id);
-                $article_info["all_tags"] = Tag::all();
+                $all_tags = Tag::all();
                 if ($article_info["article"]->id) {
-                    $this->render("edit", $article_info);
+                    $this->render("edit", ["article" => $article_info["article"], "tags" => $article_info["tags"],
+                        "images" => $article_info["images"], "all_tags" => $all_tags]);
                     exit;
                 }
                 $error = ["error" => "投稿見つかれません！"];
@@ -108,6 +114,12 @@
         public function update() {
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
+
+            /*  CSRFトークンを確認する */
+            if (!Csrf::validateCsrfToken()) {
+                /*  トークンがない場合、エラーを返す  */
+                die("正規の画面からご使用ください");
+            }
 
             if (!empty($_POST)) {
                 /*  フォームの入力をチェックする    */
@@ -167,6 +179,12 @@
         public function destroy() {
             $current_uri = $_SERVER['REQUEST_URI'];
             $current_uri_array = explode("/", $current_uri);
+
+            /*  CSRFトークンを確認する */
+            if (!Csrf::validateCsrfToken()) {
+                /*  トークンがない場合、エラーを返す  */
+                die("正規の画面からご使用ください");
+            }
 
             /* 削除の権利があるかどうかをチェックする  */
             if ($_SESSION["id"] == Article::getArticleAuthorId(end($current_uri_array))) {
