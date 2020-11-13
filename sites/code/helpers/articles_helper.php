@@ -18,4 +18,18 @@
 
             return $form_error;
         }
+
+        /*  アドレス欄から投稿のidを取得する    */
+        static function getIdFromURI() {
+            $current_uri_array = explode("/", $_SERVER['REQUEST_URI']);
+
+            return end($current_uri_array);
+        }
+        
+        /*  アドレス欄から更新したい投稿のidを取得する    */
+        static function getEditIdFromURI() {
+            $current_uri_array = explode("/", $_SERVER['REQUEST_URI']);
+
+            return $current_uri_array[count($current_uri_array) - 2];
+        }
     }
