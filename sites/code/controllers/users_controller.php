@@ -16,31 +16,44 @@
 
         public function login() {
             /*  ユーザーがログイン情ほを記録しているかをチェックする    */
-            if (!empty($_COOKIE["email"])) {
-                $_POST["email"] = $_COOKIE["email"];
-                $_POST["password"] = $_COOKIE["password"];
-                $_POST["save"] = "on";
+            if (!empty($_SESSION["current_user"])) {
+                header("Location: /");
+                exit();
+            }
+
+            if (!empty($_COOKIE["encrypted_token"])) {
+                $user_info = User::getLoginInfo($_COOKIE["encrypted_email"]);
+                if ($user_info->cookie_expires < time()) {
+                    $_SESSION["id"] = $user_info->id;
+                    $_SESSION["current_user"] = $user_info->user_name;
+                    $md5_email = md5($user_info->email);
+                    User::autoLoginUser($user_info->id, $md5_email);
+                    setcookie("encrypted_token", $md5_email, time()+3600);
+
+                    header("Location: /");
+                    exit();
+                }
             }
 
             /*  入力したフォームをチェックする */
             if (!empty($_POST)) {
                 if (!empty($_POST["email"]) && !empty($_POST["password"])) {
-                    $logged_in_user = User::loginUser(
+                    $login_user = User::checkLoginUser(
                         $_POST["email"],
-                        $_POST["password"]
+                        $_POST["password"],
                     );
                     
-                    if (!empty($logged_in_user->id)) {
+                    if (!empty($login_user->id)) {
                         /*  ログイン成功    */
-                        $_SESSION["id"] = $logged_in_user->id;
-                        $_SESSION["current_user"] = $logged_in_user->user_name;
-                        $_SESSION["time"] = time();
+                        $_SESSION["id"] = $login_user->id;
+                        $_SESSION["current_user"] = $login_user->user_name;
 
                         /*  ログイン情報を記録する  */
                         if ($_POST["save"] === "on")
-                        {
-                            setcookie("email", $_POST["email"], time()+3600);
-                            setcookie("password", $_POST["password"], time()+3600);
+                        {   
+                            $md5_email = md5($login_user->email);
+                            User::autoLoginUser($login_user->id, $md5_email);
+                            setcookie("encrypted_email", $md5_email, time()+3600);
                         }
 
                         header("Location: /");
@@ -65,6 +78,7 @@
 
         public function logout() {
             /*  セッション情報を削除    */
+            User::destroySessionKey($_SESSION["id"]);
             $_SESSION = [];
             if (ini_get("session.use_cookies")){
                 $params = session_get_cookie_params();
@@ -76,8 +90,7 @@
             session_destroy();
 
             /*  Cookie情報も削除    */
-            setcookie("email", "", time() - 3600);
-            setcookie("password", "", time() - 3600);
+            setcookie("encrypted_email", "", time() - 3600);
 
             header("Location: /users/login");
         }
